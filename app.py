@@ -1,0 +1,156 @@
+import streamlit as st
+
+# カスタムCSS
+st.markdown("""
+<style>
+    .stButton > button {
+        width: 100%;
+        height: 50px;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 2px;
+    }
+    
+    /* 計算ボタンのスタイル */
+    .calc-button .stButton > button {
+        background-color: #4CAF50;
+        color: white;
+        font-size: 1.2rem;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    
+    /* 入力エリアを大きく */
+    .input-area input {
+        font-size: 1.5rem;
+        height: 50px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+def calculate_real_size(drawing_size):
+    return drawing_size * 80
+
+def calculate_drawing_size(real_size):
+    return real_size / 80
+
+def add_numpad(key_prefix, current_value):
+    # 現在の値を文字列として管理
+    if 'input_value' not in st.session_state:
+        st.session_state.input_value = str(int(current_value))  # 整数に変換
+    
+    # テンキーのボタン配置（小数点を削除）
+    buttons = [
+        ['7', '8', '9'],
+        ['4', '5', '6'],
+        ['1', '2', '3'],
+        ['0', 'C', '⌫']  # 小数点を削除キーに変更
+    ]
+    
+    container = st.container()
+    with container:
+        # テンキーの表示
+        for row in buttons:
+            cols = st.columns([1, 1, 1])
+            for i, button in enumerate(row):
+                with cols[i]:
+                    if st.button(button, key=f'{key_prefix}_{button}'):
+                        if button == 'C':
+                            st.session_state.input_value = '0'
+                        elif button == '⌫':  # バックスペース機能
+                            st.session_state.input_value = st.session_state.input_value[:-1] or '0'
+                        else:
+                            if st.session_state.input_value == '0':
+                                st.session_state.input_value = button
+                            else:
+                                st.session_state.input_value += button
+    
+    try:
+        return int(st.session_state.input_value)  # 整数として返す
+    except ValueError:
+        return 0
+
+st.title('80分の1スケール変換計算機')
+
+# タブを作成
+tab1, tab2 = st.tabs(['図面から実寸への変換', '実寸から図面サイズへの変換'])
+
+# 図面から実寸への変換
+with tab1:
+    st.header('図面から実寸への変換')
+    
+    # テンキー
+    st.write('テンキー：')
+    current_value1 = add_numpad('drawing', 0.0)
+    
+    # 入力エリア
+    st.markdown('##### 入力値')
+    input_col1 = st.container()
+    with input_col1:
+        st.markdown('<div class="input-area">', unsafe_allow_html=True)
+        drawing_size = st.number_input(
+            '図面上で測定した長さ（mm）：',
+            min_value=0,
+            step=1,
+            format='%d',
+            value=int(current_value1)
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # 計算ボタン
+    calc_col1 = st.container()
+    with calc_col1:
+        st.markdown('<div class="calc-button">', unsafe_allow_html=True)
+        if st.button('計算する', key='calc1'):
+            real_size = calculate_real_size(drawing_size)
+            st.success(f"""
+            実際のサイズ：
+            - {real_size:.1f} mm
+            - {real_size/1000:.3f} m
+            """)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# 実寸から図面サイズへの変換
+with tab2:
+    st.header('実寸から図面サイズへの変換')
+    
+    # テンキー
+    st.write('テンキー：')
+    current_value2 = add_numpad('real', 0.0)
+    
+    # 入力エリア
+    st.markdown('##### 入力値')
+    input_col2 = st.container()
+    with input_col2:
+        st.markdown('<div class="input-area">', unsafe_allow_html=True)
+        real_size = st.number_input(
+            '実際の長さ（mm）：',
+            min_value=0,
+            step=1,
+            format='%d',
+            value=int(current_value2)
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # 計算ボタン
+    calc_col2 = st.container()
+    with calc_col2:
+        st.markdown('<div class="calc-button">', unsafe_allow_html=True)
+        if st.button('計算する', key='calc2'):
+            drawing_size = calculate_drawing_size(real_size)
+            st.success(f"""
+            図面上のサイズ：
+            - {drawing_size:.1f} mm
+            """)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# サイドバーに説明を追加
+with st.sidebar:
+    st.header('使い方')
+    st.write("""
+    1. 変換したい方のタブを選択
+    2. テンキーで数値を入力（または直接入力）
+    3. 「計算する」ボタンをクリック
+    
+    ※ テンキーの'C'は入力クリア
+    """)
