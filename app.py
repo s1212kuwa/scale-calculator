@@ -73,28 +73,13 @@ def add_numpad(key_prefix, current_value):
     # テンキーの表示
     container = st.container()
     with container:
-        # 通常のStreamlitボタンを非表示で配置（状態管理用）
-        cols = st.columns(3)
-        for row in buttons:
-            for button in row:
-                if st.button(button, key=f'{key_prefix}_{button}', visible=False):
-                    if button == 'C':
-                        st.session_state.input_value = '0'
-                    elif button == '⌫':
-                        st.session_state.input_value = st.session_state.input_value[:-1] or '0'
-                    else:
-                        if st.session_state.input_value == '0':
-                            st.session_state.input_value = button
-                        else:
-                            st.session_state.input_value += button
-
         # カスタムHTMLボタンを表示
         html_buttons = ""
         for row in buttons:
             for button in row:
                 html_buttons += f'''
                     <div class="numpad-button">
-                        <button onclick="document.querySelector('button[key=\\'{key_prefix}_{button}\\']').click();">
+                        <button class="numpad-btn" data-value="{button}">
                             {button}
                         </button>
                     </div>
@@ -105,6 +90,14 @@ def add_numpad(key_prefix, current_value):
                 {html_buttons}
             </div>
             <style>
+                .numpad-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 5px;
+                    max-width: 300px;
+                    margin: 0 auto;
+                    padding: 10px;
+                }}
                 .numpad-grid button {{
                     width: 100%;
                     height: 50px;
@@ -121,6 +114,39 @@ def add_numpad(key_prefix, current_value):
                     background-color: #f0f0f0;
                 }}
             </style>
+            <script>
+                const buttons = document.querySelectorAll('.numpad-btn');
+                buttons.forEach(button => {{
+                    button.addEventListener('click', function() {{
+                        const value = this.getAttribute('data-value');
+                        if (value === 'C') {{
+                            window.parent.postMessage({{
+                                type: 'streamlit:set_session_state',
+                                data: {{ input_value: '0' }}
+                            }}, '*');
+                        }} else if (value === '⌫') {{
+                            const currentValue = '{st.session_state.input_value}';
+                            const newValue = currentValue.slice(0, -1) || '0';
+                            window.parent.postMessage({{
+                                type: 'streamlit:set_session_state',
+                                data: {{ input_value: newValue }}
+                            }}, '*');
+                        }} else {{
+                            const currentValue = '{st.session_state.input_value}';
+                            const newValue = currentValue === '0' ? value : currentValue + value;
+                            window.parent.postMessage({{
+                                type: 'streamlit:set_session_state',
+                                data: {{ input_value: newValue }}
+                            }}, '*');
+                        }}
+                        // ページをリロード
+                        window.parent.postMessage({{
+                            type: 'streamlit:rerun',
+                            data: {{}}
+                        }}, '*');
+                    }});
+                }});
+            </script>
         ''', unsafe_allow_html=True)
 
     try:
