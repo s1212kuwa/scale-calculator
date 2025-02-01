@@ -22,12 +22,12 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
-    /* モバイル対応のための追加スタイル */
-    @media (max-width: 768px) {
-        .stButton > button {
-            font-size: 20px;
-            height: 45px;
-        }
+    # /* モバイル対応のための追加スタイル */
+    # @media (max-width: 768px) {
+    #     .stButton > button {
+    #         font-size: 20px;
+    #         height: 45px;
+    #     }
         
         .input-area input {
             font-size: 1.2rem;
