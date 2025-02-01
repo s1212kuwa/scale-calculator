@@ -9,6 +9,7 @@ st.markdown("""
         font-size: 24px;
         font-weight: bold;
         margin: 2px;
+        padding: 0px;  /* パディングを削除 */
     }
     
     /* 計算ボタンのスタイル */
@@ -25,6 +26,20 @@ st.markdown("""
         font-size: 1.5rem;
         height: 50px;
     }
+
+    /* モバイル対応のための追加スタイル */
+    @media (max-width: 768px) {
+        .stButton > button {
+            font-size: 20px;
+            height: 45px;
+            min-width: unset !important;
+        }
+        
+        .input-area input {
+            font-size: 1.2rem;
+            height: 45px;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -37,36 +52,40 @@ def calculate_drawing_size(real_size):
 def add_numpad(key_prefix, current_value):
     # 現在の値を文字列として管理
     if 'input_value' not in st.session_state:
-        st.session_state.input_value = str(int(current_value))  # 整数に変換
+        st.session_state.input_value = str(int(current_value))
     
-    # テンキーのボタン配置（小数点を削除）
+    # テンキーのボタン配置
     buttons = [
         ['7', '8', '9'],
         ['4', '5', '6'],
         ['1', '2', '3'],
-        ['0', 'C', '⌫']  # 小数点を削除キーに変更
+        ['0', 'C', '⌫']
     ]
     
+    # テンキーの表示（固定幅のコンテナ内に配置）
+    max_width = 400  # 最大幅を設定
     container = st.container()
     with container:
-        # テンキーの表示
-        for row in buttons:
-            cols = st.columns([1, 1, 1])
-            for i, button in enumerate(row):
-                with cols[i]:
-                    if st.button(button, key=f'{key_prefix}_{button}'):
-                        if button == 'C':
-                            st.session_state.input_value = '0'
-                        elif button == '⌫':  # バックスペース機能
-                            st.session_state.input_value = st.session_state.input_value[:-1] or '0'
-                        else:
-                            if st.session_state.input_value == '0':
-                                st.session_state.input_value = button
+        # 中央寄せのためのカラムを作成
+        left, center, right = st.columns([1, 3, 1])
+        with center:
+            for row in buttons:
+                cols = st.columns([1, 1, 1])
+                for i, button in enumerate(row):
+                    with cols[i]:
+                        if st.button(button, key=f'{key_prefix}_{button}'):
+                            if button == 'C':
+                                st.session_state.input_value = '0'
+                            elif button == '⌫':
+                                st.session_state.input_value = st.session_state.input_value[:-1] or '0'
                             else:
-                                st.session_state.input_value += button
+                                if st.session_state.input_value == '0':
+                                    st.session_state.input_value = button
+                                else:
+                                    st.session_state.input_value += button
     
     try:
-        return int(st.session_state.input_value)  # 整数として返す
+        return int(st.session_state.input_value)
     except ValueError:
         return 0
 
