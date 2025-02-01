@@ -37,7 +37,7 @@ st.markdown("""
 
     /* テンキーのコンテナスタイル */
     .numpad-container {
-        max-width: 200px;
+        max-width: 100px;
         margin: 0 auto;
     }
     
