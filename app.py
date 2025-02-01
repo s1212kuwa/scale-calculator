@@ -4,7 +4,7 @@ import streamlit as st
 st.markdown("""
 <style>
     .stButton > button {
-        width: 20%;
+        width: 100%;
         height: 50px;
         font-size: 24px;
         font-weight: bold;
@@ -21,8 +21,22 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
+    /* テンキーのグリッドレイアウト */
+    .numpad-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+
+    .numpad-button {
+        width: 100%;
+    }
+
     /* モバイル対応のための追加スタイル */
-    @media (max-width: 200px) {
+    @media (max-width: 768px) {
         .stButton > button {
             font-size: 20px;
             height: 45px;
@@ -33,24 +47,6 @@ st.markdown("""
             font-size: 1.2rem;
             height: 45px;
         }
-    }
-
-    /* テンキーのコンテナスタイル */
-    .numpad-container {
-        max-width: 100px;
-        margin: 0 auto;
-    }
-    
-    /* ボタン間のギャップを調整 */
-    .numpad-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 5px;
-    }
-    
-    .numpad-button {
-        flex: 1;
-        margin: 0 2px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -77,27 +73,31 @@ def add_numpad(key_prefix, current_value):
     # テンキーの表示
     container = st.container()
     with container:
-        st.markdown('<div class="numpad-container">', unsafe_allow_html=True)
+        html_buttons = ""
         for row in buttons:
-            st.markdown('<div class="numpad-row">', unsafe_allow_html=True)
-            cols = st.columns([1, 1, 1])
-            for i, button in enumerate(row):
-                with cols[i]:
-                    st.markdown('<div class="numpad-button">', unsafe_allow_html=True)
-                    if st.button(button, key=f'{key_prefix}_{button}'):
-                        if button == 'C':
-                            st.session_state.input_value = '0'
-                        elif button == '⌫':
-                            st.session_state.input_value = st.session_state.input_value[:-1] or '0'
-                        else:
-                            if st.session_state.input_value == '0':
-                                st.session_state.input_value = button
-                            else:
-                                st.session_state.input_value += button
-                    st.markdown('</div>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    
+            for button in row:
+                html_buttons += f'<div class="numpad-button element-container css-1hynsf2 e1f1d6gn2">'
+                html_buttons += f'<div class="row-widget stButton css-1yqw6j3 e1f1d6gn1">'
+                html_buttons += f'<button kind="secondary" class="css-1cpxqw2 edgvbvh9" id="{key_prefix}_{button}">{button}</button>'
+                html_buttons += '</div></div>'
+
+        st.markdown(f'<div class="numpad-grid">{html_buttons}</div>', unsafe_allow_html=True)
+
+        # JavaScriptでボタンのクリックイベントを処理
+        js = f"""
+        <script>
+        const buttons = document.querySelectorAll('.numpad-grid button');
+        buttons.forEach(button => {{
+            button.addEventListener('click', function() {{
+                const value = this.textContent;
+                // Streamlitのボタンクリックをシミュレート
+                document.querySelector(`button[key="{key_prefix}_${{value}}"]`).click();
+            }});
+        }});
+        </script>
+        """
+        st.markdown(js, unsafe_allow_html=True)
+
     try:
         return int(st.session_state.input_value)
     except ValueError:
