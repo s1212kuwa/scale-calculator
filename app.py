@@ -1,24 +1,34 @@
 import streamlit as st
 
-# カスタムCSSを更新
+st.title("80分の1スケール 計算ツール")
+
+# CSSでスタイルを設定
 st.markdown("""
-
-def calculate_real_size(drawing_size):
-    return drawing_size * 80
-
-def calculate_drawing_size(real_size):
-    return real_size / 80
-
-def add_numpad(key_prefix, current_value):
-    # 現在の値を文字列として管理
-    if 'input_value' not in st.session_state:
-        st.session_state.input_value = str(int(current_value))
+<style>
+    .stButton > button {
+        width: 100%;
+        height: 50px;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0px;
+        padding: 0px;
+    }
     
-    # テンキーのボタン配置
+    [data-testid="stHorizontalBlock"] {
+        min-width: 200px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# セッション状態の初期化
+if 'input_value' not in st.session_state:
+    st.session_state.input_value = '0'
+
+def create_tenkey(key_prefix):
     buttons = [
-        ['1', '2', '3'],
-        ['4', '5', '6'],
         ['7', '8', '9'],
+        ['4', '5', '6'],
+        ['1', '2', '3'],
         ['0', 'C', '⌫']
     ]
     
@@ -39,100 +49,74 @@ def add_numpad(key_prefix, current_value):
                                 st.session_state.input_value = button
                             else:
                                 st.session_state.input_value += button
-    
-    try:
-        return int(st.session_state.input_value)
-    except ValueError:
-        return 0
 
-st.title('80分の1スケール変換計算機')
+# タブの作成
+tab1, tab2 = st.tabs(["図面寸法から実寸を計算", "実寸から図面寸法を計算"])
 
-# タブを作成
-tab1, tab2 = st.tabs(['図面から', '実寸から'])
-
-# 図面から実寸への変換
 with tab1:
-    st.header('図面から')
+    st.markdown("図面上の寸法を入力してください（mm）")
     
-    # テンキー
-    st.write('テンキー：')
-    current_value1 = add_numpad('drawing', 0.0)
+    # 数値入力フィールド
+    drawing_input = st.text_input("図面寸法", value=st.session_state.input_value, key="drawing_input")
     
-    # 入力エリア
-    st.markdown('##### 入力値')
-    input_col1 = st.container()
-    with input_col1:
-        st.markdown('<div class="input-area">', unsafe_allow_html=True)
-        drawing_size = st.number_input(
-            '図面上で測定した長さ（mm）：',
-            min_value=0,
-            step=1,
-            format='%d',
-            value=int(current_value1)
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+    # テンキー表示
+    create_tenkey("drawing")
     
-    # 計算ボタン
-    calc_col1 = st.container()
-    with calc_col1:
-        st.markdown('<div class="calc-button">', unsafe_allow_html=True)
-        if st.button('計算する', key='calc1'):
-            real_size = calculate_real_size(drawing_size)
-            st.success(f"""
-            実際のサイズ:
-            f"- {real_size:.1f} mm"
-            f"- {real_size/1000:.3f} m"
+    if st.button("計算する", key="calc_drawing"):
+        try:
+            drawing_size = float(st.session_state.input_value)
+            real_size = drawing_size * 80
             
-            縮尺サイズ:
-            f"- {scale_size:.1f} mm"
-            f"- {scale_size/1000:.3f} m"
+            st.markdown(f"""
+            計算結果:
+            
+            図面上の寸法:
+            - {drawing_size:.1f} mm
+            - {drawing_size/1000:.3f} m
+            
+            実際の寸法:
+            - {real_size:.1f} mm
+            - {real_size/1000:.3f} m
+            
+            縮尺: 1:80
             """)
-        st.markdown('</div>', unsafe_allow_html=True)
+        except ValueError:
+            st.error("有効な数値を入力してください")
 
-# 実寸から図面サイズへの変換
 with tab2:
-    st.header('実寸から')
+    st.markdown("実際の寸法を入力してください（mm）")
     
-    # テンキー
-    st.write('テンキー：')
-    current_value2 = add_numpad('real', 0.0)
+    # 数値入力フィールド
+    real_input = st.text_input("実寸法", value=st.session_state.input_value, key="real_input")
     
-    # 入力エリア
-    st.markdown('##### 入力値')
-    input_col2 = st.container()
-    with input_col2:
-        st.markdown('<div class="input-area">', unsafe_allow_html=True)
-        real_size = st.number_input(
-            '実際の長さ（mm）：',
-            min_value=0,
-            step=1,
-            format='%d',
-            value=int(current_value2)
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+    # テンキー表示
+    create_tenkey("real")
     
-    # 計算ボタン
-    calc_col2 = st.container()
-    with calc_col2:
-        st.markdown('<div class="calc-button">', unsafe_allow_html=True)
-        if st.button('計算する', key='calc2'):
-            drawing_size = calculate_drawing_size(real_size)
-            st.success(f"""
-            図面上のサイズ:
-            f"- {drawing_size:.1f} mm"
-            f"- {drawing_size/1000:.3f} m"
+    if st.button("計算する", key="calc_real"):
+        try:
+            real_size = float(st.session_state.input_value)
+            drawing_size = real_size / 80
+            
+            st.markdown(f"""
+            計算結果:
+            
+            実際の寸法:
+            - {real_size:.1f} mm
+            - {real_size/1000:.3f} m
+            
+            図面上の寸法:
+            - {drawing_size:.1f} mm
+            - {drawing_size/1000:.3f} m
+            
+            縮尺: 1:80
             """)
-        st.markdown('</div>', unsafe_allow_html=True)
+        except ValueError:
+            st.error("有効な数値を入力してください")
 
-# サイドバーに説明を追加
-with st.sidebar:
-    st.header('使い方')
-    st.markdown("""
-    1. 変換したい方のタブを選択
-    2. テンキーで数値を入力(または直接入力)
-    3. "計算する"ボタンをクリック
-    
-    * テンキーの'C'は入力クリア
-    """)
-
-
+st.markdown("""
+使い方:
+1. 計算したい寸法のタブを選択
+2. テンキーで数値を入力(または直接入力)
+3. "計算する"ボタンをクリック
+* テンキーの'C'は入力クリア
+""")
