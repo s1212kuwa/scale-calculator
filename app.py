@@ -4,7 +4,7 @@ import streamlit as st
 st.markdown("""
 <style>
     .stButton > button {
-        width: 100%;
+        width: 50%;
         height: 50px;
         font-size: 24px;
         font-weight: bold;
