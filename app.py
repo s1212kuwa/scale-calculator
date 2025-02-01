@@ -4,12 +4,12 @@ import streamlit as st
 st.markdown("""
 <style>
     .stButton > button {
-        width: 20%;
+        width: 100%;  /* 20%から100%に変更 */
         height: 50px;
         font-size: 24px;
         font-weight: bold;
         margin: 2px;
-        padding: 0px;  /* パディングを削除 */
+        padding: 0px;
     }
     
     /* 計算ボタンのスタイル */
@@ -40,6 +40,12 @@ st.markdown("""
             height: 45px;
         }
     }
+
+    /* テンキーのコンテナスタイル */
+    .numpad-container {
+        max-width: 300px;
+        margin: 0 auto;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -56,33 +62,31 @@ def add_numpad(key_prefix, current_value):
     
     # テンキーのボタン配置
     buttons = [
-        ['1', '2', '3'],
-        ['4', '5', '6'],
         ['7', '8', '9'],
+        ['4', '5', '6'],
+        ['1', '2', '3'],
         ['0', 'C', '⌫']
     ]
     
-    # テンキーの表示（固定幅のコンテナ内に配置）
-    max_width = 400  # 最大幅を設定
+    # テンキーの表示
     container = st.container()
     with container:
-        # 中央寄せのためのカラムを作成
-        left, center, right = st.columns([1, 3, 1])
-        with center:
-            for row in buttons:
-                cols = st.columns([1, 1, 1])
-                for i, button in enumerate(row):
-                    with cols[i]:
-                        if st.button(button, key=f'{key_prefix}_{button}'):
-                            if button == 'C':
-                                st.session_state.input_value = '0'
-                            elif button == '⌫':
-                                st.session_state.input_value = st.session_state.input_value[:-1] or '0'
+        st.markdown('<div class="numpad-container">', unsafe_allow_html=True)
+        for row in buttons:
+            cols = st.columns(3)  # 3列に固定
+            for i, button in enumerate(row):
+                with cols[i]:
+                    if st.button(button, key=f'{key_prefix}_{button}'):
+                        if button == 'C':
+                            st.session_state.input_value = '0'
+                        elif button == '⌫':
+                            st.session_state.input_value = st.session_state.input_value[:-1] or '0'
+                        else:
+                            if st.session_state.input_value == '0':
+                                st.session_state.input_value = button
                             else:
-                                if st.session_state.input_value == '0':
-                                    st.session_state.input_value = button
-                                else:
-                                    st.session_state.input_value += button
+                                st.session_state.input_value += button
+        st.markdown('</div>', unsafe_allow_html=True)
     
     try:
         return int(st.session_state.input_value)
