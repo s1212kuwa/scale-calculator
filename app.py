@@ -51,10 +51,10 @@ def create_tenkey(key_prefix):
                                 st.session_state.input_value += button
 
 # タブの作成
-tab1, tab2 = st.tabs(["図面寸法から実寸を計算", "実寸から図面寸法を計算"])
+tab1, tab2 = st.tabs(["図面から", "実寸から"])
 
 with tab1:
-    st.markdown("図面上の寸法を入力してください（mm）")
+    st.markdown("図面上の寸法（mm）")
     
     # 数値入力フィールド
     drawing_input = st.text_input("図面寸法", value=st.session_state.input_value, key="drawing_input")
@@ -84,7 +84,7 @@ with tab1:
             st.error("有効な数値を入力してください")
 
 with tab2:
-    st.markdown("実際の寸法を入力してください（mm）")
+    st.markdown("実際の寸法（mm）")
     
     # 数値入力フィールド
     real_input = st.text_input("実寸法", value=st.session_state.input_value, key="real_input")
