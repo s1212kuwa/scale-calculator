@@ -4,7 +4,7 @@ import streamlit as st
 st.markdown("""
 <style>
     .stButton > button {
-        width: 100%;
+        width: 20%;
         height: 50px;
         font-size: 24px;
         font-weight: bold;
@@ -22,7 +22,7 @@ st.markdown("""
     }
 
     /* モバイル対応のための追加スタイル */
-    @media (max-width: 768px) {
+    @media (max-width: 200px) {
         .stButton > button {
             font-size: 20px;
             height: 45px;
