@@ -21,11 +21,11 @@ st.markdown("""
         margin-bottom: 10px;
     }
     
-    /* 入力エリアを大きく */
-    .input-area input {
-        font-size: 1.5rem;
-        height: 50px;
-    }
+    # /* 入力エリアを大きく */
+    # .input-area input {
+    #     font-size: 1.5rem;
+    #     height: 50px;
+    # }
 
     /* モバイル対応のための追加スタイル */
     @media (max-width: 768px) {
