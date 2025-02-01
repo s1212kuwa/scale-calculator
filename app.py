@@ -5,11 +5,11 @@ st.markdown("""
 <style>
     /* テンキーボタンのスタイル */
     .stButton > button {
-        width: 100%;
-        height: 50px;
-        font-size: 24px;
+        width: 10%;
+        height: 30px;
+        font-size: 16px;
         font-weight: bold;
-        margin: 2px;
+        margin: 1px;
         padding: 0px;
     }
     
@@ -50,9 +50,9 @@ def add_numpad(key_prefix, current_value):
     
     # テンキーのボタン配置
     buttons = [
-        ['7', '8', '9'],
-        ['4', '5', '6'],
         ['1', '2', '3'],
+        ['4', '5', '6'],
+        ['7', '8', '9'],
         ['0', 'C', '⌫']
     ]
     
