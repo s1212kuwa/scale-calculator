@@ -4,7 +4,7 @@ import streamlit as st
 st.markdown("""
 <style>
     .stButton > button {
-        width: 100%;  /* 20%から100%に変更 */
+        width: 100%;
         height: 50px;
         font-size: 24px;
         font-weight: bold;
@@ -20,12 +20,6 @@ st.markdown("""
         margin-top: 10px;
         margin-bottom: 10px;
     }
-    
-    # /* 入力エリアを大きく */
-    # .input-area input {
-    #     font-size: 1.5rem;
-    #     height: 50px;
-    # }
 
     /* モバイル対応のための追加スタイル */
     @media (max-width: 768px) {
@@ -43,8 +37,20 @@ st.markdown("""
 
     /* テンキーのコンテナスタイル */
     .numpad-container {
-        max-width: 300px;
+        max-width: 200px;
         margin: 0 auto;
+    }
+    
+    /* ボタン間のギャップを調整 */
+    .numpad-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+    
+    .numpad-button {
+        flex: 1;
+        margin: 0 2px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -73,9 +79,11 @@ def add_numpad(key_prefix, current_value):
     with container:
         st.markdown('<div class="numpad-container">', unsafe_allow_html=True)
         for row in buttons:
-            cols = st.columns(3)  # 3列に固定
+            st.markdown('<div class="numpad-row">', unsafe_allow_html=True)
+            cols = st.columns([1, 1, 1])
             for i, button in enumerate(row):
                 with cols[i]:
+                    st.markdown('<div class="numpad-button">', unsafe_allow_html=True)
                     if st.button(button, key=f'{key_prefix}_{button}'):
                         if button == 'C':
                             st.session_state.input_value = '0'
@@ -86,6 +94,8 @@ def add_numpad(key_prefix, current_value):
                                 st.session_state.input_value = button
                             else:
                                 st.session_state.input_value += button
+                    st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     try:
