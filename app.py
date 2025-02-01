@@ -3,6 +3,7 @@ import streamlit as st
 # カスタムCSSを更新
 st.markdown("""
 <style>
+    /* テンキーボタンのスタイル */
     .stButton > button {
         width: 100%;
         height: 50px;
@@ -21,26 +22,11 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
-    /* テンキーのグリッドレイアウト */
-    .numpad-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 5px;
-        max-width: 300px;
-        margin: 0 auto;
-        padding: 10px;
-    }
-
-    .numpad-button {
-        width: 100%;
-    }
-
     /* モバイル対応のための追加スタイル */
     @media (max-width: 768px) {
         .stButton > button {
             font-size: 20px;
             height: 45px;
-            min-width: unset !important;
         }
         
         .input-area input {
@@ -73,82 +59,21 @@ def add_numpad(key_prefix, current_value):
     # テンキーの表示
     container = st.container()
     with container:
-        # カスタムHTMLボタンを表示
-        html_buttons = ""
         for row in buttons:
-            for button in row:
-                html_buttons += f'''
-                    <div class="numpad-button">
-                        <button class="numpad-btn" data-value="{button}">
-                            {button}
-                        </button>
-                    </div>
-                '''
-
-        st.markdown(f'''
-            <div class="numpad-grid">
-                {html_buttons}
-            </div>
-            <style>
-                .numpad-grid {{
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 5px;
-                    max-width: 300px;
-                    margin: 0 auto;
-                    padding: 10px;
-                }}
-                .numpad-grid button {{
-                    width: 100%;
-                    height: 50px;
-                    font-size: 24px;
-                    font-weight: bold;
-                    margin: 2px;
-                    padding: 0px;
-                    background-color: white;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }}
-                .numpad-grid button:hover {{
-                    background-color: #f0f0f0;
-                }}
-            </style>
-            <script>
-                const buttons = document.querySelectorAll('.numpad-btn');
-                buttons.forEach(button => {{
-                    button.addEventListener('click', function() {{
-                        const value = this.getAttribute('data-value');
-                        if (value === 'C') {{
-                            window.parent.postMessage({{
-                                type: 'streamlit:set_session_state',
-                                data: {{ input_value: '0' }}
-                            }}, '*');
-                        }} else if (value === '⌫') {{
-                            const currentValue = '{st.session_state.input_value}';
-                            const newValue = currentValue.slice(0, -1) || '0';
-                            window.parent.postMessage({{
-                                type: 'streamlit:set_session_state',
-                                data: {{ input_value: newValue }}
-                            }}, '*');
-                        }} else {{
-                            const currentValue = '{st.session_state.input_value}';
-                            const newValue = currentValue === '0' ? value : currentValue + value;
-                            window.parent.postMessage({{
-                                type: 'streamlit:set_session_state',
-                                data: {{ input_value: newValue }}
-                            }}, '*');
-                        }}
-                        // ページをリロード
-                        window.parent.postMessage({{
-                            type: 'streamlit:rerun',
-                            data: {{}}
-                        }}, '*');
-                    }});
-                }});
-            </script>
-        ''', unsafe_allow_html=True)
-
+            cols = st.columns(3)
+            for i, button in enumerate(row):
+                with cols[i]:
+                    if st.button(button, key=f'{key_prefix}_{button}', use_container_width=True):
+                        if button == 'C':
+                            st.session_state.input_value = '0'
+                        elif button == '⌫':
+                            st.session_state.input_value = st.session_state.input_value[:-1] or '0'
+                        else:
+                            if st.session_state.input_value == '0':
+                                st.session_state.input_value = button
+                            else:
+                                st.session_state.input_value += button
+    
     try:
         return int(st.session_state.input_value)
     except ValueError:
