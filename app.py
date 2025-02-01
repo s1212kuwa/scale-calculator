@@ -119,7 +119,8 @@ with tab2:
             drawing_size = calculate_drawing_size(real_size)
             st.success(f"""
             図面上のサイズ:
-            - {drawing_size:.1f} mm
+            f"- {drawing_size:.1f} mm"
+            f"- {drawing_size/1000:.3f} m"
             """)
         st.markdown('</div>', unsafe_allow_html=True)
 
