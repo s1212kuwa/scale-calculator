@@ -5,11 +5,11 @@ st.markdown("""
 <style>
     /* テンキーボタンのスタイル */
     .stButton > button {
-        width: 50%;
+        width: 100%;
         height: 50px;
         font-size: 16px;
         font-weight: bold;
-        margin: 2px;
+        margin: 0px;
         padding: 0px;
     }
     
