@@ -26,9 +26,9 @@ if 'input_value' not in st.session_state:
 
 def create_tenkey(key_prefix):
     buttons = [
-        ['7', '8', '9'],
-        ['4', '5', '6'],
         ['1', '2', '3'],
+        ['4', '5', '6'],
+        ['7', '8', '9'],
         ['0', 'C', '⌫']
     ]
     
