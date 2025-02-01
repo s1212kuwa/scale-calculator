@@ -2,40 +2,6 @@ import streamlit as st
 
 # カスタムCSSを更新
 st.markdown("""
-<style>
-    /* テンキーボタンのスタイル */
-    .stButton > button {
-        width: 30%;
-        height: 50px;
-        font-size: 16px;
-        font-weight: bold;
-        margin: 0px;
-        padding: 0px;
-    }
-    
-    /* 計算ボタンのスタイル */
-    .calc-button .stButton > button {
-        background-color: #4CAF50;
-        color: white;
-        font-size: 1.2rem;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-
-    # /* モバイル対応のための追加スタイル */
-    # @media (max-width: 768px) {
-    #     .stButton > button {
-    #         font-size: 20px;
-    #         height: 45px;
-    #     }
-        
-        .input-area input {
-            font-size: 1.2rem;
-            height: 45px;
-        }
-    }
-</style>
-""", unsafe_allow_html=True)
 
 def calculate_real_size(drawing_size):
     return drawing_size * 80
@@ -163,3 +129,5 @@ with st.sidebar:
     
     ※ テンキーの'C'は入力クリア
     """)
+
+
