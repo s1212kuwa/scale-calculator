@@ -73,30 +73,55 @@ def add_numpad(key_prefix, current_value):
     # テンキーの表示
     container = st.container()
     with container:
+        # 通常のStreamlitボタンを非表示で配置（状態管理用）
+        cols = st.columns(3)
+        for row in buttons:
+            for button in row:
+                if st.button(button, key=f'{key_prefix}_{button}', visible=False):
+                    if button == 'C':
+                        st.session_state.input_value = '0'
+                    elif button == '⌫':
+                        st.session_state.input_value = st.session_state.input_value[:-1] or '0'
+                    else:
+                        if st.session_state.input_value == '0':
+                            st.session_state.input_value = button
+                        else:
+                            st.session_state.input_value += button
+
+        # カスタムHTMLボタンを表示
         html_buttons = ""
         for row in buttons:
             for button in row:
-                html_buttons += f'<div class="numpad-button element-container css-1hynsf2 e1f1d6gn2">'
-                html_buttons += f'<div class="row-widget stButton css-1yqw6j3 e1f1d6gn1">'
-                html_buttons += f'<button kind="secondary" class="css-1cpxqw2 edgvbvh9" id="{key_prefix}_{button}">{button}</button>'
-                html_buttons += '</div></div>'
+                html_buttons += f'''
+                    <div class="numpad-button">
+                        <button onclick="document.querySelector('button[key=\\'{key_prefix}_{button}\\']').click();">
+                            {button}
+                        </button>
+                    </div>
+                '''
 
-        st.markdown(f'<div class="numpad-grid">{html_buttons}</div>', unsafe_allow_html=True)
-
-        # JavaScriptでボタンのクリックイベントを処理
-        js = f"""
-        <script>
-        const buttons = document.querySelectorAll('.numpad-grid button');
-        buttons.forEach(button => {{
-            button.addEventListener('click', function() {{
-                const value = this.textContent;
-                // Streamlitのボタンクリックをシミュレート
-                document.querySelector(`button[key="{key_prefix}_${{value}}"]`).click();
-            }});
-        }});
-        </script>
-        """
-        st.markdown(js, unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="numpad-grid">
+                {html_buttons}
+            </div>
+            <style>
+                .numpad-grid button {{
+                    width: 100%;
+                    height: 50px;
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: 2px;
+                    padding: 0px;
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }}
+                .numpad-grid button:hover {{
+                    background-color: #f0f0f0;
+                }}
+            </style>
+        ''', unsafe_allow_html=True)
 
     try:
         return int(st.session_state.input_value)
