@@ -1,6 +1,6 @@
 import streamlit as st
 
-# カスタムCSS
+# カスタムCSSを更新
 st.markdown("""
 <style>
     .stButton > button {
@@ -56,9 +56,9 @@ def add_numpad(key_prefix, current_value):
     
     # テンキーのボタン配置
     buttons = [
-        ['7', '8', '9'],
-        ['4', '5', '6'],
         ['1', '2', '3'],
+        ['4', '5', '6'],
+        ['7', '8', '9'],
         ['0', 'C', '⌫']
     ]
     
@@ -92,11 +92,11 @@ def add_numpad(key_prefix, current_value):
 st.title('80分の1スケール変換計算機')
 
 # タブを作成
-tab1, tab2 = st.tabs(['図面から実寸への変換', '実寸から図面サイズへの変換'])
+tab1, tab2 = st.tabs(['図面から', '実寸から'])
 
 # 図面から実寸への変換
 with tab1:
-    st.header('図面から実寸への変換')
+    st.header('図面から')
     
     # テンキー
     st.write('テンキー：')
@@ -131,7 +131,7 @@ with tab1:
 
 # 実寸から図面サイズへの変換
 with tab2:
-    st.header('実寸から図面サイズへの変換')
+    st.header('実寸から')
     
     # テンキー
     st.write('テンキー：')
