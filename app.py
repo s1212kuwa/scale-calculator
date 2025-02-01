@@ -127,7 +127,7 @@ with tab2:
 # サイドバーに説明を追加
 with st.sidebar:
     st.header('使い方')
-    st.write("""
+    st.markdown("""
     1. 変換したい方のタブを選択
     2. テンキーで数値を入力(または直接入力)
     3. "計算する"ボタンをクリック
