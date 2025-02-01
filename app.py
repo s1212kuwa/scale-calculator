@@ -81,7 +81,7 @@ with tab1:
             st.success(f"""
             実際のサイズ:
             f"- {real_size:.1f} mm"
-            - {real_size/1000:.3f} m
+            f"- {real_size/1000:.3f} m"
             """)
         st.markdown('</div>', unsafe_allow_html=True)
 
