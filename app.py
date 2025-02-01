@@ -82,6 +82,10 @@ with tab1:
             実際のサイズ:
             f"- {real_size:.1f} mm"
             f"- {real_size/1000:.3f} m"
+            
+            縮尺サイズ:
+            f"- {scale_size:.1f} mm"
+            f"- {scale_size/1000:.3f} m"
             """)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -114,7 +118,7 @@ with tab2:
         if st.button('計算する', key='calc2'):
             drawing_size = calculate_drawing_size(real_size)
             st.success(f"""
-            図面上のサイズ：
+            図面上のサイズ:
             - {drawing_size:.1f} mm
             """)
         st.markdown('</div>', unsafe_allow_html=True)
